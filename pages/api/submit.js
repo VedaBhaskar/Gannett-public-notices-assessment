@@ -22,22 +22,22 @@ export default function handler(req, res) {
       data.customer_name.length > 0 &&
       data.customer_email.length > 0 &&
       data.text_body.length > 0
-    ){
+    ) {
       // debugging feedback
       console.debug(`data payload: ${JSON.stringify(data)}`);
 
       // define filename and path
-      const epoch_date = new Date.now().getTime() / 1000;
+      const epoch_date = Math.floor(Date.now() / 1000);
       const file_name = `customer_submission_${epoch_date}.json`;
       const base_path = path.join(process.cwd(), `/public/submissions/${file_name}`);
 
       // write file to public submissions in public directory
       fs.writeFile(base_path, req.body, (err) => {
-        if (err){res.status(500).json({ status: "error", message: err })}
+        if (err) { res.status(500).json({ status: "error", message: err }) }
       })
 
       // return a 200 for response
-      res.status(200).json({ status: "good", message: "information successfully submitted"})
+      res.status(200).json({ status: "success", message: "information successfully submitted" })
     } else {
       console.debug(`data payload: ${req.body}`)
       res.status(500).json({ status: "error", message: "missing or incorrect data" })

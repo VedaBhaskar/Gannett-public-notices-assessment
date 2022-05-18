@@ -8,36 +8,40 @@ export async function getServerSideProps(context) {
   const file_list = fs.readdirSync(base_path);
   let submissions = [];
   // loop over files in directory and return an array of objects that includes their filename & contents
-  for (const file of file_list){
-    const file_data = fs.readFileSync(`${base_path}/${file}`, {encoding:'utf8', flag:'r'});
+  for (const file of file_list) {
+    const file_data = fs.readFileSync(`${base_path}/${file}`, { encoding: 'utf8', flag: 'r' });
     submissions.push({
       filename: file,
       content: JSON.parse(file_data)
     });
   }
   return {
-    props: {submissions: submissions},
+    props: { submissions: submissions },
   }
 }
 
 export default function Submissions(props) {
+  const epoch_time_regex = /^.+_(\d+).json$/;
 
   // get the epoch time from the filename
   const parseEpoch = (filename) => {
-    const regex = /^.+_(\d+).json$/;
-    const epoch_time = filename.match(regex)[1];
+    const epoch_time = filename.match(epoch_time_regex)[1];
     const date_time = new Date(epoch_time * 1000)
     return date_time.toLocaleDateString()
   }
 
+  const sortedSubmissions = props.submissions.sort((submission1, submission2) =>
+    submission2.filename.match(epoch_time_regex)[1] - submission1.filename.match(epoch_time_regex)[1]
+  );
+
   // convert submission objects into jsd
-  const submissions = props.submissions.map(s => {
+  const submissions = sortedSubmissions.map(s => {
     const parsed_date = parseEpoch(s.filename)
     return (
       <Grid key={parsed_date}>
         <Grid>
           <Typography>
-            Date: {parsed_date}<br/>
+            Date: {parsed_date}<br />
           </Typography>
         </Grid>
         <Grid>
@@ -57,12 +61,12 @@ export default function Submissions(props) {
             {s.content.text_body}
           </Typography>
         </Grid>
-        <hr/>
+        <hr />
       </Grid>
     )
   })
 
-  return(
+  return (
     <Container>
       <Head>
         <title>Public Notices</title>
@@ -75,7 +79,7 @@ export default function Submissions(props) {
         </Typography>
       </Grid>
       <Grid>
-        { submissions }
+        {submissions}
       </Grid>
     </Container>
   )

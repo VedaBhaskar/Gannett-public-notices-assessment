@@ -1,9 +1,15 @@
 import Head from 'next/head'
+import { useState } from 'react';
 import { Container, Grid, Typography } from '@mui/material'
+
+import SubmissionForm from '../components/submission_form'
+import AlertBanner from '../components/alert_banner'
+import Link from 'next/link'
 
 export default function Home() {
   // URL for submitting the input form
   const submission_url = "/api/submit";
+  const [postRequestDetails, setPostRequestDetails] = useState({});
 
   return (
     <Container>
@@ -18,16 +24,29 @@ export default function Home() {
         </Typography>
       </Grid>
       <Grid>
-        {/* Place user feedback messages here */}
+        {'message' in postRequestDetails &&
+          <AlertBanner
+            status={postRequestDetails.status}
+            message={postRequestDetails.message}
+          />
+        }
       </Grid>
       <Grid>
-        <Typography>
+        <Typography lineHeight={4}>
           Please enter your information into the submission form below and click &quot;Submit&quot; when finished.
         </Typography>
-        {/* Input form should go here */}
+        <SubmissionForm
+          submission_url={submission_url}
+          setPostRequestDetails={setPostRequestDetails}
+        />
       </Grid>
       <Grid>
-        {/* Place submitted notice here */}
+        <Typography variant="h1">
+          Submissions
+        </Typography>
+        <Link href="/submissions">
+          <a>View Submissions</a>
+        </Link>
       </Grid>
     </Container>
   )
